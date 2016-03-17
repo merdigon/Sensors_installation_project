@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'compass/stylesheets/dashboard.css' %}">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            {% for thermometer in thermometers %}
+                new Morris.Line({
+                        element: 'temperature_chart{{ thermometer.id }}',
+                    data: [
+                {% for thermometer_history in thermometers_history %}
+                    {% if thermometer_history.sensor_option == thermometer %}
+
+                            {time: "{{ thermometer_history.date|date:"Y-m-d G:i" }}", value: {{thermometer_history.integer_value}}},
+
+                    {% endif %}
+                {% endfor %}
+                ],
+                xkey: 'time',
+                        ykeys: ['value'],
+                        labels: ['Temperature [°C]']
+                    });
+            {% endfor %}
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">Dashboard</h1>
+        </div>
+    </div>
+    <div class="row">
+        {% if no_problems %}
+            <div class="col-md-offset-2 col-md-8">
+                <div class="panel panel-green">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <i class="glyphicon glyphicon-ok-sign" style="font-size: 5em;"></i>
+                            </div>
+                            <div class="col-xs-8">
+                                <div style="font-size: 3em;">Home secure</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            {% if warnings > 0 %}
+                <div class="col-md-offset-2 col-md-8">
+                    <div class="panel panel-yellow">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <i class="glyphicon glyphicon-exclamation-sign" style="font-size: 5em;"></i>
+                                </div>
+                                <div class="col-xs-8">
+                                    {% if warnings == 1 %}
+                                        <div style="font-size: 3em;">1 Warning</div>
+                                    {% else %}
+                                        <div style="font-size: 3em;">{{ warnings }} Warnings</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <a href="" data-toggle="modal" data-target="#warningModal">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="glyphicon glyphicon-circle-arrow-right"
+                                                    style="font-size: 1.5em;"></i></span>
+
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% include 'dashboard_warnings_modal.html' %}
+            {% endif %}
+            {% if errors > 0 %}
+                <div class="col-md-offset-2 col-md-8">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <i class="	glyphicon glyphicon-remove-sign" style="font-size: 5em;"></i>
+                                </div>
+                                <div class="col-xs-8">
+                                    {% if errors == 1 %}
+                                        <div style="font-size: 3em;">1 Danger</div>
+                                    {% else %}
+                                        <div style="font-size: 3em;">{{ errors }} Dangers</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <a href="" data-toggle="modal" data-target="#errorModal">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="glyphicon glyphicon-circle-arrow-right"
+                                                style="font-size: 1.5em;"></i></span>
+
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% include 'dashboard_errors_modal.html' %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="page-header">Sensors list</h2>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Sensor name</th>
+                    <th>Sensor type</th>
+                    <th>Status</th>
+                    <th>Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for sensor in sensors %}
+                    <tr {% if not sensor.is_info %} {% if sensor.triggered and sensor.is_warning %}class="warning"
+                        {% elif sensor.triggered %}class="danger"{% endif %}{% endif %}>
+                        <td>{{ sensor.sensor }}</td>
+                        <td>{{ sensor.sensor.sensor_type }}</td>
+                        <td>{% if not sensor.triggered and not sensor.is_info %}Not
+                            {{ sensor.option|lower }}{% else %}{{ sensor.option }}{% endif %}</td>
+                        <td>{% if sensor.integer_value %}{{ sensor.integer_value }}{% else %}---{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if thermometers %}
+        <h2 class="page-header">Thermometers</h2>
+        {% for thermometer in thermometers %}
+            {% if forloop.counter0|divisibleby:"2" %}
+                <div class="row">
+            {% endif %}
+        <div class="col-md-6">
+            <strong>Thermometer {{ thermometer.sensor }}</strong>
+            <div id="temperature_chart{{ thermometer.id }}" style="height: 250px;"></div>
+        </div>
+        {% if forloop.counter|divisibleby:"2" %}
+            </div>
+        {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endblock %}

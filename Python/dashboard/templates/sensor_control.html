@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block extra_css %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#tab2_content").hide().removeClass("hidden");
+            $("#tab3_content").hide().removeClass("hidden");
+            $("#tab1").click(function () {
+                $(this).addClass("active");
+                $("#tab1_content").show();
+                $("#tab2_content").hide();
+                $("#tab3_content").hide();
+                $("#tab2").removeClass("active");
+                $("#tab3").removeClass("active");
+            });
+            $("#tab2").click(function () {
+                $(this).addClass("active");
+                $("#tab2_content").show();
+                $("#tab1_content").hide();
+                $("#tab3_content").hide();
+                $("#tab1").removeClass("active");
+                $("#tab3").removeClass("active");
+            });
+            $("#tab3").click(function () {
+                $(this).addClass("active");
+                $("#tab3_content").show();
+                $("#tab1_content").hide();
+                $("#tab2_content").hide();
+                $("#tab1").removeClass("active");
+                $("#tab2").removeClass("active");
+            });
+
+            $(".sensor_row").click(function () {
+                var sensor_id = $(this).children(".sensor_id").text();
+                var sensor_option = $(this).children(".sensor_option").text();
+                $.post('send_signal/' + sensor_id + '/' + sensor_option + '/').fail(function(){
+                    alert('error while sending signal');
+                });
+                alert('sent');
+            });
+
+            $(".sensor2_row").click(function () {
+                var sensor_id = $(this).children(".sensor2_id").text();
+                var sensor_option = $(this).children(".sensor2_option").text();
+                var sensor_value = $(this).children(".sensor2_value").text();
+                var new_value = prompt("Enter new value", sensor_value);
+                if($.isNumeric(new_value)) {
+                    if (new_value != null) {
+                        $.post('send_value/' + sensor_id + '/' + sensor_option + '/' + new_value + '/');
+                        alert('sent');
+                    }
+                } else {
+                    alert('not a number');
+                }
+            });
+
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <br/>
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="nav nav-tabs">
+                <p class="navbar-brand">Sensor control</p>
+                <li id="tab1" role="presentation" class="active"><a href="#">Trigger sensor</a></li>
+                <li id="tab2" role="presentation"><a href="#">Add sensor</a></li>
+                <li id="tab3" role="presentation"><a href="#">Change value</a></li>
+            </ul>
+        </div>
+    </div>
+    <br/>
+    <div id="tab1_content">
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Sensor name</th>
+                        <th>Sensor ID</th>
+                        <th>Sensor type</th>
+                        <th>Option</th>
+                        <th>Triggered</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for sensor in sensors %}
+                        {% if not sensor.is_integer %}
+                        <tr class="sensor_row">
+                            <td>{{ sensor.sensor }}</td>
+                            <td class="sensor_id">{{ sensor.sensor.sensor_id }}</td>
+                            <td>{{ sensor.sensor.sensor_type }}</td>
+                            <td class="sensor_option">{{ sensor.option }}</td>
+                            <td>{{ sensor.triggered }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab2_content" class="hidden">
+        <div class="row">
+            <div class="col-md-12">
+                <form role="form" method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form add_form %}
+                    <button type="submit" class="btn btn-default">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab3_content" class="hidden">
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Sensor name</th>
+                        <th>Sensor ID</th>
+                        <th>Sensor type</th>
+                        <th>Option</th>
+                        <th>Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for sensor in sensors %}
+                        {% if sensor.is_integer %}
+                        <tr class="sensor2_row">
+                            <td>{{ sensor.sensor }}</td>
+                            <td class="sensor2_id">{{ sensor.sensor.sensor_id }}</td>
+                            <td>{{ sensor.sensor.sensor_type }}</td>
+                            <td class="sensor2_option">{{ sensor.option }}</td>
+                            <td class="sensor2_value">{{ sensor.integer_value }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

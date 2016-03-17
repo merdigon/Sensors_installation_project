@@ -1,0 +1,63 @@
+/* line 1, ../sass/dashboard.scss */
+.panel {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+/* line 10, ../sass/dashboard.scss */
+.panel-green {
+  border-color: #5cb85c;
+}
+/* line 11, ../sass/dashboard.scss */
+.panel-green .panel-heading {
+  border-color: #5cb85c;
+  color: #fff;
+  background-color: #5cb85c;
+}
+/* line 16, ../sass/dashboard.scss */
+.panel-green a {
+  color: #5cb85c;
+}
+
+/* line 22, ../sass/dashboard.scss */
+.panel-yellow {
+  border-color: #f0ad4e;
+}
+/* line 23, ../sass/dashboard.scss */
+.panel-yellow .panel-heading {
+  border-color: #f0ad4e;
+  color: #fff;
+  background-color: #f0ad4e;
+}
+/* line 28, ../sass/dashboard.scss */
+.panel-yellow a {
+  color: #f0ad4e;
+}
+
+/* line 34, ../sass/dashboard.scss */
+.panel-red {
+  border-color: #d9534f;
+}
+/* line 35, ../sass/dashboard.scss */
+.panel-red .panel-heading {
+  border-color: #d9534f;
+  color: #fff;
+  background-color: #d9534f;
+}
+/* line 40, ../sass/dashboard.scss */
+.panel-red a {
+  color: #d9534f;
+}
+
+/* line 46, ../sass/dashboard.scss */
+.panel-footer {
+  padding: 10px 15px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #ddd;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}

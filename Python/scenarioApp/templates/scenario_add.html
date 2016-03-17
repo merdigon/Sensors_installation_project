@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+        <h1 class="page-header">Add scenario</h1>
+
+        <form method="post">
+        {% bootstrap_form scenarioform %}
+        <h3>Options:</h3>
+        {{ formset.management_form }}
+            <div id="form_set">
+                {% for form in formset.forms %}
+                    <table class='no_error'>
+                        {% csrf_token %}
+                        {% bootstrap_form form %}
+                    </table>
+                    --------------------------------------------
+                {% endfor %}
+            </div>
+        <input class="btn btn-default" type="submit" value="Add scenario"/>
+        </form>
+            <button class="btn btn-primary" id="add_more" style="margin-top: 20px;">Add more options</button>
+
+            <div id="empty_form" style="display:none">
+                <table class='no_error'>
+                    <!---{{ formset.empty_form.as_table }}--->
+                    {% bootstrap_form formset.empty_form %}
+                </table>
+            </div>
+            <script>
+                $('#add_more').click(function () {
+                    var form_idx = $('#id_form-TOTAL_FORMS').val();
+                    $('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+                    $('#id_form-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+                });
+            </script>
+        </div>
+    </div>
+{% endblock %}

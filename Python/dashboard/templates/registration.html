@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static bootstrap3 %}
+
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'compass/stylesheets/registration.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'animate.css' %}">
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#start_button").click(function () {
+                $(this).html('<span class="glyphicon glyphicon-refresh glyphicon-loader-animate" id="wait_span"></span> Please wait...');
+                $("#play_span").remove();
+                $("#play_text").html("Waiting for signal from sensor...").addClass("animated fadeIn");
+                $(this).unbind();
+                setTimeout(function () {
+                    {% if registration %}
+                        $("#start_button").hide();
+                        $("#register_form").removeClass("hidden");
+                        $("#play_text").html("Sensor found, type: " + "{{ registration.sensor_type }}" + " | ID: " +
+                        "{{ registration.sensor_id }}").addClass("animated fadeIn");
+                    {% endif %}
+                }, 3000);
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="page-header">Sensor registration</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12" id="play_text">
+            When sensor is ready, press start
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 hidden" id="register_form">
+            <p>Please enter sensor name</p>
+            <form role="form" method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <button type="submit" class="btn btn-default">Register</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <br/>
+            <button class="btn btn-primary btn-lg" id="start_button" aria-label="Left Align">
+                <span class="glyphicon glyphicon-play" id="play_span"></span> Start
+            </button>
+        </div>
+    </div>
+{% endblock %}

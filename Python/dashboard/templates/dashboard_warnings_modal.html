@@ -1,0 +1,35 @@
+<div id="warningModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">System warnings</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Scenario name</th>
+                        <th>Warning message</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for scenario in scenarios %}
+                        {% if scenario.is_warning %}
+                            <tr>
+                                <td>{{ scenario.scenario_name }}</td>
+                                <td>{{ scenario.message }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
